@@ -1,0 +1,45 @@
+---
+title: "MA703 Term Project"
+author: "Tom Morin"
+date: "11/20/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(igraph)
+library(tidyr)
+library(ggplot2)
+library(RColorBrewer)
+library(data.table)
+
+YEO7_COLORS <- c("Vis"="#781180", "SomMot"="#4680B3", "DorsAttn"="#007607", 
+                 "SalVentAttn"="#C43AFB", "Limbic"="#DCF8A3", "Cont"="#E69421",
+                 "Default"="#CD3E48", "WholeBrain"="FFFFFF")
+YEO7_NAMES <- c("Vis", "SomMot", "DorsAttn", "SalVentAttn",
+                "Limbic", "Cont", "Default")
+names(YEO7_COLORS) <- YEO7_NAMES
+YEO7_SCALE <- scale_color_manual(name="Community", values=YEO7_COLORS)
+```
+
+```{r, include=FALSE}
+# Read in data
+fpath <- "/Volumes/CogNeuroimaging/Tom/Classes/3_Year/1_Semester/MA703_SAND_Kolaczyk/Project/"
+all.ts <- read.csv(paste(fpath, "data/s04_run-1_Schaefer400ts.txt", sep=""))
+comms <- read.csv(paste(fpath, "data/s04_Schaefer400_communities.txt", sep=""))
+
+corr.ts <- cor(all.ts)
+sorted_corrs <- sort(c(corr.ts))
+top_ten_pct_thrsh <- sorted_corrs[0.9*length(sorted_corrs)]
+```
+
+```{r, include=FALSE}
+THRSH <- 0.5
+corr.ts.thrsh <- corr.ts * (corr.ts > THRSH)
+bin.corr.ts <- 1 * (corr.ts > THRSH)
+corr.ts.top_ten_pct <- corr.ts * (corr.ts > top_ten_pct_thrsh)
+mx_to_plot <- corr.ts.thrsh
+igraph.options(vertex.size = 7, vertex.label=NA)
+
+
+```
